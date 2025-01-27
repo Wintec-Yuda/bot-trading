@@ -3,8 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   category: 'spot',
   symbol: 'BTCUSDT',
-  amount: '0.1',
-  interval: '1',
+  amount: 0.1,
+  interval: '240',
 };
 
 const filterSlice = createSlice({

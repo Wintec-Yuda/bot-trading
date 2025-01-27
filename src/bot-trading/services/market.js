@@ -21,7 +21,7 @@ const marketService = {
         category,
         symbol,
         interval,
-        limit: 200  
+        limit: 200
       };
 
       const response = await axiosInstanceDemo.get('/v5/market/kline', { params });
