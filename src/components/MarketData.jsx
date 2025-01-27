@@ -1,5 +1,8 @@
+'use client'
+
 import marketService from "@/bot-trading/services/market";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const MarketData = () => {
   const [klineData, setKlineData] = useState([]);
@@ -7,8 +10,12 @@ const MarketData = () => {
   const {category, symbol, interval} = useSelector(state => state.filter);
 
   const fetchKlineData = async () => {
-    const klineData = await marketService.getAllKline(category, symbol, interval);
-    setKlineData(klineData);
+    try {
+      const data = await marketService.getAllKline(category, symbol, interval);
+      setKlineData(data || []);
+    } catch (error) {
+      console.error("Error fetching kline data:", error);
+    }
   };
 
   useEffect(() => {
@@ -16,11 +23,11 @@ const MarketData = () => {
   }, [category, symbol, interval]);
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow">
+    <div className="p-4 rounded-lg shadow">
       <h2 className="text-xl font-semibold mb-4">Market Data</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full">
-          <thead className="bg-gray-50">
+          <thead className="">
             <tr>
               <th className="px-4 py-2 text-left">Time</th>
               <th className="px-4 py-2 text-left">Open</th>

@@ -1,16 +1,32 @@
-import { setCategory, setSymbol } from "@/lib/redux/slices/filterSlice";
-import React from "react";
-import { useDispatch } from "react-redux";
+'use client'
 
-const categories = ["linear", "spot"];
+import marketService from "@/bot-trading/services/market";
+import { setAmount, setCategory, setInterval, setSymbol } from "@/lib/redux/slices/filterSlice";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+const categories = ["spot", "linier"];
 const intervals = [1, 3, 5, 15, 30, 60, 120, 240, 360, 720, "D", "M", "W"];
 
 const Filter = () => {
+  const [symbols, setSymbols] = useState([]);
+
   const dispatch = useDispatch();
 
-  const category = useSelector((state) => state.filter.category);
-  const symbol = useSelector((state) => state.filter.symbol);
-  const interval = useSelector((state) => state.filter.interval);
+  const { category, symbol, interval, amount} = useSelector((state) => state.filter.category);
+
+  const fetchSymbols = async () => {
+    try {
+      const data = await marketService.getAllSymbol(category);
+      setSymbols(data || []);
+    } catch (error) {
+      console.error("Error fetching kline data:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchSymbols(category);
+  }, [category]);
 
   const handleCategoryChange = (e) => {
     dispatch(setCategory(e.target.value));
@@ -24,10 +40,14 @@ const Filter = () => {
     dispatch(setInterval(e.target.value));
   };
 
+  const handleAmountChange = (e) => {
+    dispatch(setAmount(e.target.value));
+  };
+
   return (
-    <div className="bg-white p-4 rounded-lg shadow">
+    <div className="p-4 rounded-lg shadow">
       <h2 className="text-xl font-semibold mb-4">Market Selection</h2>
-      <div className="space-y-4">
+      <div className="space-y-4 text-black">
         {/* Category Dropdown */}
         <div>
           <label className="block text-sm font-medium mb-1">Category</label>
@@ -65,7 +85,7 @@ const Filter = () => {
           <label className="block text-sm font-medium mb-1">Interval</label>
           <select
             className="w-full p-2 border rounded"
-            value={selectedInterval}
+            value={interval}
             onChange={handleIntervalChange}
           >
             {intervals.map((interval) => (
@@ -79,17 +99,7 @@ const Filter = () => {
         {/* Amount Dropdown */}
         <div>
           <label className="block text-sm font-medium mb-1">Amount</label>
-          <select
-            className="w-full p-2 border rounded"
-            value={selectedAmount}
-            onChange={handleAmountChange}
-          >
-            {amounts.map((amount) => (
-              <option key={amount} value={amount}>
-                {amount}
-              </option>
-            ))}
-          </select>
+          <input type="number" className="w-full p-2 border rounded" value={amount} onChange={handleAmountChange} defaultValue={0.1} />
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 const config = {
-  baseUrl: 'https://api-demo.bybit.com',
-  apiKey: process.env.BYBIT_API_KEY,
-  secretKey: process.env.BYBIT_SECRET_KEY,
+  apiKey: process.env.BYBIT_API_KEY || 'WD53nBPIwh4MAxRPr5',
+  secretKey: process.env.BYBIT_SECRET_KEY || 'DeOPwPPRM43iZccKAYdKlvnEb8Y7MmRDOTyr',
   rsiPeriod: 14,
   rsiOverbought: 70,
   rsiOversold: 30,
