@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config from '@/config';
+import { generateSignature } from '@/bot-trading/utils';
 
 const { apiKey } = config;
 
