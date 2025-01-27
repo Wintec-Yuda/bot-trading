@@ -27,33 +27,49 @@ const accountService = {
       return null;
     }
   },
-  getAccountBalance: async () => {
-    const params = {
-      accountType: 'UNIFIED'
-    }
-
-    console.log(params);
-    
-    const signature = generateSignature(JSON.stringify(params));
-
+  getAccountBalance: async (category) => {
     try {
-      const response = await axiosInstanceDemo.get('/v5/account/wallet-balance', params, {
-        headers: {
-          "X-BAPI-SIGN": signature,
-        },
-      });
-
-      console.log(response);
-      
-      
-      const account = response.data?.result?.list?.[0];
-      return {
-        walletBalance: account?.totalWalletBalance || '0',
-        availableBalance: account?.totalAvailableBalance || '0'
-      };
+      // For spot market
+      if (category === 'spot') {
+        const response = await axiosInstanceDemo.get('/v5/account/wallet-balance', {
+          params: {
+            accountType: 'UNIFIED',
+            coin: 'USDT'
+          }
+        });
+        
+        const account = response.data?.result?.list?.[0];
+        const coin = account?.coin?.find(c => c.coin === 'USDT');
+        
+        return {
+          walletBalance: coin?.walletBalance || '0',
+          availableBalance: coin?.availableToWithdraw || '0',
+          marginBalance: '0' // Not applicable for spot
+        };
+      } 
+      // For futures market
+      else {
+        const response = await axiosInstanceDemo.get('/v5/account/wallet-balance', {
+          params: {
+            accountType: 'UNIFIED'
+          }
+        });
+        
+        const account = response.data?.result?.list?.[0];
+        
+        return {
+          walletBalance: account?.totalWalletBalance || '0',
+          availableBalance: account?.totalAvailableBalance || '0',
+          marginBalance: account?.totalMarginBalance || '0'
+        };
+      }
     } catch (error) {
       console.error('Error getting balance:', error?.response?.data || error);
-      return null;
+      return {
+        walletBalance: '0',
+        availableBalance: '0',
+        marginBalance: '0'
+      };
     }
   }
 }
