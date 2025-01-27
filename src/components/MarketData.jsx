@@ -2,6 +2,7 @@
 
 import marketService from "@/bot-trading/services/market";
 import { setKlineData } from "@/lib/redux/slices/marketSlice";
+import marketServiceTestnet from "@/testnet/marketService";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -24,6 +25,12 @@ const MarketData = () => {
     }
     setLoading(false);
   };
+
+  // useEffect(() => {
+    // console.log("category:", category, "symbol:", symbol, "interval:", interval);
+    
+    marketServiceTestnet.getKlineData({category, symbol, interval});
+  // }, [category, symbol, interval]);
 
   useEffect(() => {
     fetchKlineData();
