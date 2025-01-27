@@ -3,15 +3,15 @@
 import accountService from "@/bot-trading/services/account";
 import botService from "@/bot-trading/services/botService";
 import { setAvailableBalance, setBotRunning, setWalletBalance, setMarginBalance } from "@/lib/redux/slices/accountSlice";
-import { setCategory } from "@/lib/redux/slices/filterSlice";
+import { setAmount, setCategory } from "@/lib/redux/slices/filterSlice";
 import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const categories = ["spot", "linear"];
 
 const Account = () => {
-  const { botRunning, walletBalance, availableBalance, marginBalance, category } = useSelector((state) => state.account);
-  const { symbol, interval, amount } = useSelector((state) => state.filter);
+  const { botRunning, walletBalance, availableBalance, marginBalance } = useSelector((state) => state.account);
+  const { symbol, interval, amount, category } = useSelector((state) => state.filter);
   const dispatch = useDispatch();
 
   const handleBotRun = useCallback(() => {
@@ -48,7 +48,7 @@ const Account = () => {
   };
 
   const handleAmountChange = (e) => {
-    dispatch(setCategory(e.target.value)); 
+    dispatch(setAmount(e.target.value)); 
   };
 
   // Fetch account balance when category or botRunning state changes
@@ -72,13 +72,13 @@ const Account = () => {
         {categories.map((c) => (
           <button
             key={c}
-            className={`px-5 py-2 text-sm sm:text-base rounded-full transition-all duration-300 ${
-              category === c ? 'bg-blue-600 text-white' : 'bg-gray-700 text-white hover:bg-blue-500'
+            className={`px-2 py-2 text-sm sm:text-base transition-all duration-300 ${
+              category == c ? 'text-white border-b border-white' : 'text-white'
             }`}
             onClick={() => handleCategoryChange(c)}
-            aria-pressed={category === c}
+            aria-pressed={category == c}
           >
-            {c}
+            {c == 'spot' ? 'Spot' : 'Futures'}
           </button>
         ))}
       </div>
@@ -112,7 +112,7 @@ const Account = () => {
 
         {/* Amount Input */}
         <div className="text-sm sm:text-base">
-          <h3 className="font-semibold text-xs">Set Amount</h3>
+          <h3 className="font-semibold text-xs mb-1">Set Amount (USDT)</h3>
           <input
             type="number"
             value={amount}

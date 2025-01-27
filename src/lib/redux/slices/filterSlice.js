@@ -4,7 +4,8 @@ const initialState = {
   category: 'spot',
   symbol: 'BTCUSDT',
   amount: 0.1,
-  interval: '240',
+  interval: '1',
+  search: '',
 };
 
 const filterSlice = createSlice({
@@ -20,14 +21,17 @@ const filterSlice = createSlice({
     setAmount: (state, action) => {
       state.amount = action.payload;
     },
-    setInterval: (state, action) => {
+    setIntervalFilter: (state, action) => {
       state.interval = action.payload;
+    },
+    setSearch: (state, action) => {
+      state.search = action.payload;
     },
   },
 });
 
 // Export actions
-export const { setCategory, setSymbol, setAmount, setInterval } = filterSlice.actions;
+export const { setCategory, setSymbol, setAmount, setIntervalFilter, setSearch } = filterSlice.actions;
 
 // Export the reducer
 export default filterSlice.reducer;

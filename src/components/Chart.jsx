@@ -1,38 +1,36 @@
-'use client'
-
 import marketService from "@/bot-trading/services/market";
 import React, { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ApexCharts from "react-apexcharts";
 import { setSymbolData, setKlineData } from "@/lib/redux/slices/marketSlice";
-import { setSymbol } from "@/lib/redux/slices/filterSlice";
-
-const SymbolDropdown = ({ symbolData, currentSymbol, onChange }) => {
-  return (
-    <div>
-      <select
-        className="w-full p-2 border rounded bg-white text-black dark:bg-gray-700 dark:text-white dark:border-gray-600"
-        value={currentSymbol}
-        onChange={onChange}
-      >
-        {symbolData.map((symbol) => (
-          <option key={symbol} value={symbol}>
-            {symbol}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-};
+import { setIntervalFilter, setSearch, setSymbol } from "@/lib/redux/slices/filterSlice";
+import { formatInterval } from "@/lib/utils/chart";
+import SymbolModal from "./SymbolModal";
 
 const Chart = () => {
-  const [klineData, setKlineData] = useState([]);
-  const [currentPrice, setCurrentPrice] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const dispatch = useDispatch();
   const { category, symbol, interval } = useSelector((state) => state.filter);
+  const klineData = useSelector((state) => state.market.klineData);
   const symbolData = useSelector((state) => state.market.symbolData);
+
+  const intervals = [
+    "1",
+    "3",
+    "5",
+    "15",
+    "30",
+    "60",
+    "120",
+    "240",
+    "360",
+    "720",
+    "D",
+    "W",
+    "M",
+  ];
 
   useEffect(() => {
     const fetchSymbols = async () => {
@@ -53,12 +51,9 @@ const Chart = () => {
       const data = await marketService.getAllKline({
         category,
         symbol,
-        interval
+        interval,
       });
-      setKlineData(data || []);
-      if (data.length > 0) {
-        setCurrentPrice(Number(data[data.length - 1][4]));
-      }
+      dispatch(setKlineData(data));
     } catch (error) {
       console.error("Error fetching kline data:", error);
       setKlineData([]);
@@ -72,107 +67,116 @@ const Chart = () => {
     return () => clearInterval(intervalId);
   }, [category, symbol, interval]);
 
-  const chartData = useMemo(() => ({
-    series: [{
-      data: klineData.map(item => ({
-        x: new Date(Number(item[0])), 
-        y: [Number(item[1]), Number(item[2]), Number(item[3]), Number(item[4])]
-      }))
-    }],
-    options: {
-      chart: {
-        type: 'candlestick',
-        height: '100%',
-        toolbar: {
-          show: true,
-          tools: {
-            download: false
-          },
-          theme: "dark"
+  const handleIntervalChange = (item) => {
+    dispatch(setIntervalFilter(item));
+  };
+
+  const chartData = useMemo(
+    () => ({
+      series: [
+        {
+          data: klineData.map((item) => ({
+            x: new Date(Number(item[0])),
+            y: [
+              Number(item[1]),
+              Number(item[2]),
+              Number(item[3]),
+              Number(item[4]),
+            ],
+          })),
         },
-        background: "#2d3748",
-      },
-      title: {
-        text: 'Candlestick Chart',
-        align: 'center',
-        style: {
-          color: '#ffffff',
-          fontSize: '16px'
-        }
-      },
-      xaxis: {
-        type: 'datetime',
-        labels: {
-          style: {
-            colors: '#a0aec0'
-          }
-        }
-      },
-      yaxis: {
-        show: true,
-        labels: {
-          style: {
-            colors: '#a0aec0'
-          }
-        }
-      },
-      plotOptions: {
-        candlestick: {
-          colors: {
-            upward: '#00b894',
-            downward: '#e74c3c'
-          }
-        }
-      },
-      annotations: {
-        yaxis: currentPrice !== null ? [{
-          y: currentPrice,
-          borderColor: '#FF4560',
-          label: {
-            text: `${currentPrice.toFixed(2)}`,
-            borderColor: '#FF4560',
-            style: {
-              color: '#fff',
-              background: '#FF4560',
+      ],
+      options: {
+        chart: {
+          type: "candlestick",
+          height: "100%",
+          toolbar: {
+            show: true,
+            tools: {
+              download: false,
             },
-          }
-        }] : []
-      },
-      grid: {
-        borderColor: '#4a5568',
-      },
-      tooltip: {
-        theme: 'dark',
-        style: {
-          fontSize: '12px',
-          color: '#ffffff'
+            theme: "dark",
+          },
+          background: "#2d3748",
         },
-        x: {
+        title: {
+          text: "Candlestick Chart",
+          align: "center",
+          style: {
+            color: "#ffffff",
+            fontSize: "16px",
+          },
+        },
+        xaxis: {
+          type: "datetime",
+          labels: {
+            style: {
+              colors: "#a0aec0",
+            },
+          },
+        },
+        yaxis: {
           show: true,
-          format: 'dd MMM yyyy HH:mm'
+          labels: {
+            style: {
+              colors: "#a0aec0",
+            },
+          },
         },
-        y: {
-          formatter: (value) => `Price: ${value.toFixed(2)}`,
-          title: {
-            formatter: (seriesName) => `${seriesName}`
-          }
+        plotOptions: {
+          candlestick: {
+            colors: {
+              upward: "#00b894",
+              downward: "#e74c3c",
+            },
+          },
         },
-        marker: {
-          show: true
+        grid: {
+          borderColor: "#4a5568",
         },
-        background: {
-          enabled: true,
-          color: '#1a202c',
+        tooltip: {
+          theme: "dark",
+          style: {
+            fontSize: "12px",
+            color: "#ffffff",
+          },
+          x: {
+            show: true,
+            format: "dd MMM yyyy HH:mm",
+          },
+          y: {
+            formatter: (value) => `Price: ${value.toFixed(2)}`,
+            title: {
+              formatter: (seriesName) => `${seriesName}`,
+            },
+          },
+          marker: {
+            show: true,
+          },
+          background: {
+            enabled: true,
+            color: "#1a202c",
+          },
+          border: {
+            color: "#4a5568",
+          },
         },
-        border: {
-          color: '#4a5568'
-        }
-      }
-    }
-  }), [klineData, currentPrice]);
+      },
+    }),
+    [klineData]
+  );
 
   const handleSymbolChange = (e) => {
     dispatch(setSymbol(e.target.value));
+    setIsModalOpen(false); // Close the modal when a symbol is selected
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   if (loading && klineData.length === 0) {
@@ -186,19 +190,48 @@ const Chart = () => {
 
   return (
     <div className="p-4 rounded-lg shadow bg-gray-800 text-gray-100">
-      <div className="flex justify-between items-center mb-4">
-        <SymbolDropdown
-          symbolData={symbolData}
-          currentSymbol={symbol}
-          onChange={handleSymbolChange}
+      <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+        <button
+          className="px-3 py-1 rounded-sm text-gray-100 bg-gray-700 flex justify-center items-center gap-2"
+          onClick={openModal}
+        >
+          <div className="text-xl mb-1">&#9776;</div>
+          <div className="font-semibold">{symbol}</div>
+        </button>
+        {/* Interval Buttons - Scrollable on Small Screens */}
+        <div className="flex gap-2 overflow-x-auto w-full md:w-auto">
+          {intervals.map((item) => (
+            <button
+              key={item}
+              onClick={() => handleIntervalChange(item)}
+              className={`px-3 py-1 rounded-sm text-gray-100 ${
+                item === interval ? "text-white" : "text-gray-500"
+              }`}
+            >
+              {formatInterval(item)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Chart Container */}
+      <div className="w-full" style={{ height: "400px" }}>
+        <ApexCharts
+          options={chartData.options}
+          series={chartData.series}
+          type="candlestick"
+          height="100%"
         />
-        <span className="text-sm text-gray-400">
-          {symbol} - {interval}min
-        </span>
       </div>
-      <div className="w-full" style={{ height: '400px' }}>
-        <ApexCharts options={chartData.options} series={chartData.series} type="candlestick" height="100%" />
-      </div>
+
+      {/* Modal for Symbol Selection */}
+      <SymbolModal
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+        symbolData={symbolData}
+        currentSymbol={symbol}
+        onChange={handleSymbolChange}
+      />
     </div>
   );
 };
