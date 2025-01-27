@@ -1,36 +1,158 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Dokumentasi Teknis Bot Trading
 
-## Getting Started
+## Daftar Isi
+1. [Struktur Aplikasi](#struktur-aplikasi)
+2. [Komponen](#komponen)
+3. [Services](#services)
+4. [State Management](#state-management)
 
-First, run the development server:
+## Struktur Aplikasi
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Aplikasi ini adalah bot trading yang dibangun menggunakan Next.js dengan Redux untuk state management. Aplikasi terdiri dari beberapa komponen utama yang menangani fungsionalitas berbeda.
+
+### Tech Stack
+- Next.js
+- Redux Toolkit
+- Tailwind CSS
+- Axios untuk HTTP requests
+
+## Komponen
+
+### 1. Account Component (`Account.jsx`)
+Komponen untuk menampilkan informasi akun dan kontrol bot.
+
+**Props**: Tidak ada (menggunakan Redux)
+
+**State yang digunakan**:
+- `botRunning`: Status bot (aktif/tidak)
+- `walletBalance`: Saldo wallet
+- `availableBalance`: Saldo tersedia
+- `marginBalance`: Saldo margin
+- `category`, `symbol`, `interval`, `amount`: Filter trading
+
+**Fungsi**:
+- `handleBotRun()`: Mengontrol start/stop bot
+- `handleRequestDemoFunds()`: Request demo funds
+- `getBalance()`: Mengambil data saldo
+
+### 2. Filter Component (`Filter.jsx`)
+Komponen untuk mengatur parameter trading.
+
+**State yang digunakan**:
+- `category`: Kategori market (spot/linear)
+- `symbol`: Pair trading
+- `interval`: Interval chart
+- `amount`: Jumlah trading
+
+**Fungsi**:
+- `handleCategoryChange()`: Update kategori
+- `handleSymbolChange()`: Update symbol
+- `handleIntervalChange()`: Update interval
+- `handleAmountChange()`: Update amount
+
+### 3. Position Component (`Position.jsx`)
+Komponen untuk menampilkan posisi trading aktif.
+
+**State yang digunakan**:
+- `positions`: Array posisi aktif
+- `category`, `symbol`: Filter
+- `botRunning`: Status bot
+
+**Data yang ditampilkan**:
+- Symbol
+- Side (Buy/Sell)
+- Size
+- Entry Price
+- Mark Price
+- Margin Type
+- PnL
+- Take Profit/Stop Loss
+
+### 4. MarketData Component (`MarketData.jsx`)
+Komponen untuk menampilkan data market.
+
+**State yang digunakan**:
+- `klineData`: Data candlestick
+- Filter dari Redux (category, symbol, interval)
+
+## Services
+
+### 1. Account Service
+```javascript
+accountService.requestDemoFunds()
+accountService.getAccountBalance(category)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Market Service
+```javascript
+marketService.getAllSymbol(category)
+marketService.getAllKline({ category, symbol, interval })
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 3. Position Service
+```javascript
+positionService.getActivePositions(category, symbol)
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Trade Service
+```javascript
+tradeService.placeOrder(category, symbol, side, quantity, takeProfit, stopLoss)
+```
 
-## Learn More
+### 5. Bot Service
+```javascript
+botService.start(category, symbol, interval, amount)
+botService.stop()
+```
 
-To learn more about Next.js, take a look at the following resources:
+## State Management
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Filter Slice
+```javascript
+state.filter = {
+  category: 'spot' | 'linear',
+  symbol: string,
+  amount: string,
+  interval: string
+}
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Account Slice
+```javascript
+state.account = {
+  walletBalance: string,
+  availableBalance: string,
+  marginBalance: string,
+  botRunning: boolean
+}
+```
 
-## Deploy on Vercel
+## Panduan Penggunaan
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Setup Awal
+1. Import komponen ProviderWrapper di root aplikasi
+2. Pastikan semua dependencies terinstall
+3. Setup environment variables untuk API keys
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Contoh Penggunaan Basic
+
+```jsx
+import { Account, Filter, Position, MarketData } from '@/components'
+
+function TradingPage() {
+  return (
+    <div className="space-y-4">
+      <Account />
+      <Filter />
+      <Position />
+      <MarketData />
+    </div>
+  )
+}
+```
+
+### Catatan Penting
+1. Semua komponen menggunakan Tailwind CSS untuk styling
+2. Real-time updates menggunakan interval 10 detik
+3. Gunakan error handling untuk semua API calls
+4. Perhatikan format data dari API (terutama untuk angka dan timestamp)

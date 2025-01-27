@@ -5,7 +5,7 @@ import { setAmount, setCategory, setInterval, setSymbol } from "@/lib/redux/slic
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-const categories = ["spot", "linier"];
+const categories = ["spot", "linear"];
 const intervals = [1, 3, 5, 15, 30, 60, 120, 240, 360, 720, "D", "M", "W"];
 
 const Filter = () => {
