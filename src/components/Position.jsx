@@ -1,20 +1,25 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import positionService from '@/bot-trading/services/positionService';
+import { setPositionData } from '@/lib/redux/slices/tradeSlice';
 
 const Position = () => {
-  const [positions, setPositions] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const positionData = useSelector(state => state.trade.positionData);
   const { category, symbol } = useSelector(state => state.filter);
   const { botRunning } = useSelector(state => state.account);
+
+  const dispatch = useDispatch();
 
   const fetchPositions = async () => {
     setLoading(true);
     try {
       const activePositions = await positionService.getActivePositions(category, symbol);
-      setPositions(activePositions);
+      
+      dispatch(setPositionData(activePositions));
     } catch (error) {
       console.error('Failed to fetch positions:', error);
     }
@@ -31,7 +36,7 @@ const Position = () => {
     return () => clearInterval(interval);
   }, [category, symbol, botRunning]);
 
-  if (loading && positions.length === 0) {
+  if (loading && positionData.length === 0) {
     return (
       <div className="bg-white p-4 rounded-lg shadow">
         <h2 className="text-xl font-semibold mb-4">Active Positions</h2>
@@ -49,7 +54,7 @@ const Position = () => {
         </div>
       </div>
       
-      {positions.length === 0 ? (
+      {positionData.length === 0 ? (
         <div className="text-center py-4 text-gray-500">No active positions</div>
       ) : (
         <div className="overflow-x-auto">
@@ -67,7 +72,7 @@ const Position = () => {
               </tr>
             </thead>
             <tbody>
-              {positions.map((position, index) => (
+              {positionData.map((position, index) => (
                 <tr key={`${position.symbol}-${index}`} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-2 font-medium">{position.symbol}</td>
                   <td className="px-4 py-2">

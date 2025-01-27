@@ -1,23 +1,23 @@
 'use client'
 
 import marketService from "@/bot-trading/services/market";
+import { setKlineData } from "@/lib/redux/slices/marketSlice";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const MarketData = () => {
-  const [klineData, setKlineData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const filter = useSelector(state => state.filter);
+  const {category, symbol, interval} = useSelector(state => state.filter);
+
+  const klineData = useSelector(state => state.market.klineData);
+
+  const dispatch = useDispatch();
 
   const fetchKlineData = async () => {
     setLoading(true);
     try {
-      const data = await marketService.getAllKline({
-        category: filter.category,
-        symbol: filter.symbol,
-        interval: filter.interval
-      });
-      setKlineData(data || []);
+      const data = await marketService.getAllKline({category, symbol, interval});
+      dispatch(setKlineData(data));
     } catch (error) {
       console.error("Error fetching kline data:", error);
       setKlineData([]);
@@ -28,10 +28,10 @@ const MarketData = () => {
   useEffect(() => {
     fetchKlineData();
     // Set up interval for real-time updates
-    const intervalId = setInterval(fetchKlineData, 10000); // Update every 10 seconds
+    const intervalId = setInterval(fetchKlineData, 60000); // Update every 10 seconds
     
     return () => clearInterval(intervalId);
-  }, [filter.category, filter.symbol, filter.interval]);
+  }, [category, symbol, interval]);
 
   if (loading && klineData.length === 0) {
     return (
@@ -47,7 +47,7 @@ const MarketData = () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Market Data</h2>
         <span className="text-sm text-gray-500">
-          {filter.symbol} - {filter.interval}min
+          {symbol} - {interval}min
         </span>
       </div>
       <div className="overflow-x-auto">

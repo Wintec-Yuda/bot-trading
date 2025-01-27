@@ -2,6 +2,7 @@
 
 import marketService from "@/bot-trading/services/market";
 import { setAmount, setCategory, setInterval, setSymbol } from "@/lib/redux/slices/filterSlice";
+import { setSymbolData } from "@/lib/redux/slices/marketSlice";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -9,7 +10,7 @@ const categories = ["spot", "linear"];
 const intervals = [1, 3, 5, 15, 30, 60, 120, 240, 360, 720, "D", "M", "W"];
 
 const Filter = () => {
-  const [symbols, setSymbols] = useState([]);
+  const symbolData = useSelector((state) => state.market.symbolData);
 
   const dispatch = useDispatch();
 
@@ -18,7 +19,7 @@ const Filter = () => {
   const fetchSymbols = async () => {
     try {
       const data = await marketService.getAllSymbol(category);
-      setSymbols(data || []);
+      dispatch(setSymbolData(data));
     } catch (error) {
       console.error("Error fetching kline data:", error);
     }
@@ -72,7 +73,7 @@ const Filter = () => {
             value={symbol}
             onChange={handleSymbolChange}
           >
-            {symbols.map((symbol) => (
+            {symbolData.map((symbol) => (
               <option key={symbol} value={symbol}>
                 {symbol}
               </option>
