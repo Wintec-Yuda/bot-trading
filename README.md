@@ -155,4 +155,4 @@ function TradingPage() {
 1. Semua komponen menggunakan Tailwind CSS untuk styling
 2. Real-time updates menggunakan interval 10 detik
 3. Gunakan error handling untuk semua API calls
-4. Perhatikan format data dari API (terutama untuk angka dan timestamp)
+4. Perhatikan format data dari API (terutama untuk angka dan timestamp) 

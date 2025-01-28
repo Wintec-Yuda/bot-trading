@@ -16,8 +16,15 @@ const Account = () => {
 
   const handleBotRun = useCallback(() => {
     if (!botRunning) {
+      console.log('Starting bot with parameters:', {
+        category,
+        symbol,
+        interval,
+        amount
+      });
       botService.start(category, symbol, interval, amount);
     } else {
+      console.log('Stopping bot');
       botService.stop();
     }
     dispatch(setBotRunning(!botRunning));
@@ -26,7 +33,10 @@ const Account = () => {
   const handleRequestDemoFunds = useCallback(async () => {
     try {
       const response = await accountService.requestDemoFunds();
-      console.log(response);
+      if (response) {
+        console.log('Demo funds requested successfully');
+        getBalance();
+      }
     } catch (error) {
       console.error('Error requesting demo funds:', error);
     }
@@ -48,15 +58,16 @@ const Account = () => {
   };
 
   const handleAmountChange = (e) => {
-    dispatch(setAmount(e.target.value)); 
+    const value = e.target.value;
+    if (!isNaN(value) && value >= 0) {
+      dispatch(setAmount(value));
+    }
   };
 
-  // Fetch account balance when category or botRunning state changes
- useEffect(() => {
+  useEffect(() => {
     getBalance();
   }, [category, getBalance]);
 
-  // Cleanup bot on component unmount if bot is running
   useEffect(() => {
     return () => {
       if (botRunning) {
@@ -73,12 +84,13 @@ const Account = () => {
           <button
             key={c}
             className={`px-2 py-2 text-sm sm:text-base transition-all duration-300 ${
-              category == c ? 'text-white border-b border-white' : 'text-white'
+              category === c ? 'text-white border-b border-white' : 'text-white'
             }`}
             onClick={() => handleCategoryChange(c)}
-            aria-pressed={category == c}
+            aria-pressed={category === c}
+            disabled={botRunning}
           >
-            {c == 'spot' ? 'Spot' : 'Futures'}
+            {c === 'spot' ? 'Spot' : 'Futures'}
           </button>
         ))}
       </div>
@@ -110,6 +122,12 @@ const Account = () => {
           </>
         )}
 
+        {/* Trading Symbol Display */}
+        <div className="flex justify-between text-xs">
+          <h3 className="font-semibold">Trading Pair</h3>
+          <p>{symbol}</p>
+        </div>
+
         {/* Amount Input */}
         <div className="text-sm sm:text-base">
           <h3 className="font-semibold text-xs mb-1">Set Amount (USDT)</h3>
@@ -119,6 +137,9 @@ const Account = () => {
             onChange={handleAmountChange}
             className="w-full h-10 p-2 text-sm sm:text-base rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
             placeholder="Enter amount"
+            min="0"
+            step="0.1"
+            disabled={botRunning}
           />
         </div>
 
@@ -126,16 +147,22 @@ const Account = () => {
         <div className="space-y-3">
           <button
             onClick={handleBotRun}
-            className="w-full bg-green-600 text-white px-5 py-2 rounded-full text-sm sm:text-base hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            aria-label={botRunning ? 'Stop Bot' : 'Start Bot'}
+            disabled={!symbol || !interval || !amount || amount <= 0}
+            className={`w-full px-5 py-2 rounded-full text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500
+              ${botRunning 
+                ? 'bg-red-600 hover:bg-red-500 text-white' 
+                : 'bg-green-600 hover:bg-green-500 text-white'
+              }
+              ${(!symbol || !interval || !amount || amount <= 0) ? 'opacity-50 cursor-not-allowed' : ''}
+            `}
           >
             {botRunning ? 'Stop Bot' : 'Start Bot'}
           </button>
 
           <button
             onClick={handleRequestDemoFunds}
-            className="w-full bg-gray-700 text-white px-5 py-2 rounded-full text-sm sm:text-base hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-            aria-label="Request Demo Funds"
+            disabled={botRunning}
+            className="w-full bg-gray-700 text-white px-5 py-2 rounded-full text-sm sm:text-base hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Request Demo Funds
           </button>

@@ -10,6 +10,7 @@ const tradeService = {
     takeProfit,
     stopLoss
   ) => {
+    // Base order parameters
     const params = {
       category,
       symbol,
@@ -18,23 +19,46 @@ const tradeService = {
       qty: quantity.toString(),
       marketUnit: "quoteCoin",
       timeInForce: "GoodTillCancel",
-      takeProfit: takeProfit.toString(),
-      stopLoss: stopLoss.toString(),
     };
 
+    // Add TP/SL if provided
+    if (takeProfit) {
+      params.takeProfit = takeProfit.toFixed(2);
+      params.tpTriggerBy = "LastPrice";
+      params.tpslMode = "Full";
+    }
+
+    if (stopLoss) {
+      params.stopLoss = stopLoss.toFixed(2);
+      params.slTriggerBy = "LastPrice";
+      params.tpslMode = "Full";
+    }
+
+    const timestamp = Date.now().toString();
     const signature = generateSignature(JSON.stringify(params));
 
     try {
-      const response = await axiosInstanceDemo.post("/v5/order/create", {
+      const response = await axiosInstanceDemo.post("/v5/order/create", params, {
         headers: {
           "X-BAPI-SIGN": signature,
           "X-BAPI-TIMESTAMP": timestamp,
         },
       });
-      return response.data;
+
+      if (response.data?.retCode === 0) {
+        console.log('Order placed successfully:', {
+          side,
+          quantity,
+          takeProfit: params.takeProfit,
+          stopLoss: params.stopLoss
+        });
+        return response.data;
+      } else {
+        throw new Error(response.data?.retMsg || 'Order placement failed');
+      }
     } catch (error) {
-      console.error("Order placement error:", error);
-      return null;
+      console.error("Order placement error:", error?.response?.data || error);
+      throw error;
     }
   },
 };
