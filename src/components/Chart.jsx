@@ -15,6 +15,7 @@ const Chart = () => {
   const { category, symbol, interval } = useSelector((state) => state.filter);
   const klineData = useSelector((state) => state.market.klineData);
   const symbolData = useSelector((state) => state.market.symbolData);
+  const botRunning = useSelector((state) => state.account.botRunning);
 
   const intervals = [
     "1",
@@ -194,6 +195,7 @@ const Chart = () => {
         <button
           className="px-3 py-1 rounded-sm text-gray-100 bg-gray-700 flex justify-center items-center gap-2"
           onClick={openModal}
+          disabled={botRunning}
         >
           <div className="text-xl mb-1">&#9776;</div>
           <div className="font-semibold">{symbol}</div>
@@ -207,6 +209,7 @@ const Chart = () => {
               className={`px-3 py-1 rounded-sm text-gray-100 ${
                 item === interval ? "text-white" : "text-gray-500"
               }`}
+              disabled={botRunning}
             >
               {formatInterval(item)}
             </button>
