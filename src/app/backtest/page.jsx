@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from "react";
 import {
   LineChart,
@@ -11,8 +13,9 @@ import {
 } from "recharts";
 import backtestService from "@/bot-trading/backtesting/services/backtestService";
 import { strategyRegistry } from "@/bot-trading/strategies";
-import SymbolModal from "./SymbolModal";
+import SymbolModal from "@/components/SymbolModal";
 import { useSelector } from "react-redux";
+
 const BacktestResults = () => {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,9 +31,9 @@ const BacktestResults = () => {
     endDate: "",
     strategyConfig: {
       tpPercentage: "2.0",
-      tpPercentageMax: "", 
+      tpPercentageMax: "",
       slPercentage: "1.0",
-      slPercentageMax: "", 
+      slPercentageMax: "",
       isRangeTP: false,
       isRangeSL: false,
     },
@@ -42,13 +45,12 @@ const BacktestResults = () => {
     const { name, value } = e.target;
     setParams((prev) => ({
       ...prev,
-      [name]: value || "", 
+      [name]: value || "",
     }));
   };
 
   const handleConfigChange = (e) => {
     const { name, value } = e.target;
-    // Keep as string in state, parse when using
     setParams((prev) => ({
       ...prev,
       strategyConfig: {
@@ -98,7 +100,7 @@ const BacktestResults = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 bg-gray-900 text-gray-100 p-6">
       {/* Configuration Panel */}
       <div className="bg-gray-800 p-6 rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Backtest Configuration</h2>

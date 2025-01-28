@@ -169,7 +169,7 @@ const Chart = () => {
 
   const handleSymbolChange = (e) => {
     dispatch(setSymbol(e.target.value));
-    setIsModalOpen(false); // Close the modal when a symbol is selected
+    setIsModalOpen(false);
   };
 
   const openModal = () => {

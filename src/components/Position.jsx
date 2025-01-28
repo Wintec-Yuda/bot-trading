@@ -32,7 +32,7 @@ const Position = () => {
     // Only start polling when bot is running
     let interval;
     if (botRunning) {
-      interval = setInterval(fetchPositions, 10000); // Refresh every 10s
+      interval = setInterval(fetchPositions, 10000); 
     }
     return () => clearInterval(interval);
   }, [category, symbol, botRunning]);

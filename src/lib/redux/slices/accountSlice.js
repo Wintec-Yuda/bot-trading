@@ -1,4 +1,3 @@
-// lib/redux/slices/accountSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {

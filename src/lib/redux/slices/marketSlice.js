@@ -18,8 +18,6 @@ const marketSlice = createSlice({
   },
 });
 
-// Export actions
 export const { setKlineData, setSymbolData } = marketSlice.actions;
 
-// Export the reducer
 export default marketSlice.reducer;
