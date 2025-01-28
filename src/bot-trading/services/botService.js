@@ -69,7 +69,16 @@ class BotService {
     }
 
     const balance = await accountService.getAccountBalance(category);
-    this.currentBalance = parseFloat(balance.availableBalance);
+    // Use walletBalance for spot, availableBalance for futures
+    this.currentBalance = parseFloat(category === 'spot' ? balance.walletBalance : balance.availableBalance);
+    
+    console.log('Balance check:', {
+      currentBalance: this.currentBalance,
+      requiredAmount: parseFloat(amount),
+      category,
+      balanceResponse: balance,
+      balanceType: category === 'spot' ? 'walletBalance' : 'availableBalance'
+    });
     
     if (this.currentBalance < parseFloat(amount)) {
       console.log("❌ Insufficient balance to start trading");
