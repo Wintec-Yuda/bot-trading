@@ -1,13 +1,13 @@
-'use client'
+"use client";
 
 import marketService from "@/bot-trading/services/market";
 import React, { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import ApexCharts from "react-apexcharts";
 import { setSymbolData, setKlineData } from "@/lib/redux/slices/marketSlice";
 import { setIntervalFilter, setSymbol } from "@/lib/redux/slices/filterSlice";
 import { formatInterval } from "@/lib/utils/chart";
 import SymbolModal from "./SymbolModal";
+import CandlestickChart from "./CandlestickChart"; // Import komponen baru
 import { toast } from "react-toastify";
 
 const Chart = () => {
@@ -41,7 +41,7 @@ const Chart = () => {
       try {
         const data = await marketService.getAllSymbol(category);
         dispatch(setSymbolData(data));
-      } catch (error) {
+      } catch {
         toast.error('Failed to fetch symbols');
       }
     };
@@ -58,7 +58,7 @@ const Chart = () => {
         interval,
       });
       dispatch(setKlineData(data));
-    } catch (error) {
+    } catch {
       setKlineData([]);
     }
     setLoading(false);
@@ -219,15 +219,8 @@ const Chart = () => {
         </div>
       </div>
 
-      {/* Chart Container */}
-      <div className="w-full" style={{ height: "400px" }}>
-        <ApexCharts
-          options={chartData.options}
-          series={chartData.series}
-          type="candlestick"
-          height="100%"
-        />
-      </div>
+      {/* Gunakan Komponen CandlestickChart */}
+      <CandlestickChart chartData={chartData} />
 
       {/* Modal for Symbol Selection */}
       <SymbolModal

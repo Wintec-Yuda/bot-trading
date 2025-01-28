@@ -1,5 +1,5 @@
 import Account from "@/components/Account";
-import MarketData from "@/components/Chart";
+import Chart from "@/components/Chart";
 import Position from "@/components/Position";
 import React from "react";
 import { ToastContainer } from "react-toastify";
@@ -13,7 +13,7 @@ const Page = () => {
           </aside>
           <main className="lg:col-span-3 space-y-6">
             <div className="bg-gray-800 rounded-lg shadow p-4">
-              <MarketData />
+              <Chart />
             </div>
             <div className="bg-gray-800 rounded-lg shadow p-4">
               <Position />

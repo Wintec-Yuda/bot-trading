@@ -63,11 +63,7 @@ const accountService = {
         };
       }
     } catch (error) {
-      return {
-        walletBalance: '0',
-        availableBalance: '0',
-        marginBalance: '0'
-      };
+      throw error;
     }
   }
 }

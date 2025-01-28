@@ -21,7 +21,7 @@ const Position = () => {
       const activePositions = await positionService.getActivePositions(category, symbol);
       
       dispatch(setPositionData(activePositions));
-    } catch (error) {
+    } catch {
       toast.error('Failed to fetch positions');
     }
     setLoading(false);

@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import StrategySelector from "./StrategySelector";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import { Fragment } from "react"
 
 const categories = ["spot", "linear"];
 
@@ -41,7 +42,7 @@ const Account = () => {
       if (response) {
         getBalance();
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to request demo funds.');
     }
   }, []);
@@ -52,7 +53,7 @@ const Account = () => {
       dispatch(setWalletBalance(response.walletBalance));
       dispatch(setAvailableBalance(response.availableBalance));
       dispatch(setMarginBalance(response.marginBalance));
-    } catch (error) {
+    } catch {
       toast.error('Failed to get account balance.');
     }
   }, [category, dispatch]);
@@ -63,7 +64,7 @@ const Account = () => {
 
   const handleAmountChange = (e) => {
     const value = e.target.value;
-    if (!isNaN(value) && value >= 0) {
+    if (!isNaN(parseInt(value)) && value >= 0) {
       dispatch(setAmount(value));
     }
   };
@@ -119,7 +120,7 @@ const Account = () => {
         </div>
 
         {category !== 'spot' && (
-          <>
+          <Fragment>
             <div className="flex justify-between text-xs">
               <h3 className="font-semibold">Available Balance</h3>
               <p>{availableBalance} USDT</p>
@@ -128,7 +129,7 @@ const Account = () => {
               <h3 className="font-semibold">Margin Balance</h3>
               <p>{marginBalance} USDT</p>
             </div>
-          </>
+          </Fragment>
         )}
 
         {/* Trading Symbol Display */}

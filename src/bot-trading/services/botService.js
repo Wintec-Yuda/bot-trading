@@ -81,7 +81,7 @@ class BotService {
       try {
         await this.executeStrategy(category, symbol, interval, amount);
       } catch (error) {
-        this.stop();
+        throw error;
       }
     }, intervalMs);
 

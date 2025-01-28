@@ -13,6 +13,8 @@ import backtestService from "@/bot-trading/backtesting/services/backtestService"
 import { strategyRegistry } from "@/bot-trading/strategies";
 import SymbolModal from "./SymbolModal";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+
 const BacktestResults = () => {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,10 +80,11 @@ const BacktestResults = () => {
 
       const results = await backtestService.runBacktest(parsedParams);
       setResults(results);
-    } catch (err) {
-      setError(err.message);
+    } catch {
+      toast.error('Failed to run backtest');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSymbolChange = (e) => {
