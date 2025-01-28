@@ -6,11 +6,21 @@ import { setAvailableBalance, setBotRunning, setWalletBalance, setMarginBalance 
 import { setAmount, setCategory } from "@/lib/redux/slices/filterSlice";
 import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import StrategySelector from "./StrategySelector";
 
 const categories = ["spot", "linear"];
 
 const Account = () => {
-  const { botRunning, walletBalance, availableBalance, marginBalance } = useSelector((state) => state.account);
+  // Include currentStrategy and strategyConfig in the state selection
+  const { 
+    botRunning, 
+    walletBalance, 
+    availableBalance, 
+    marginBalance,
+    currentStrategy,
+    strategyConfig 
+  } = useSelector((state) => state.account);
+  
   const { symbol, interval, amount, category } = useSelector((state) => state.filter);
   const dispatch = useDispatch();
 
@@ -20,15 +30,18 @@ const Account = () => {
         category,
         symbol,
         interval,
-        amount
+        amount,
+        strategy: currentStrategy,
+        config: strategyConfig
       });
+      botService.setStrategy(currentStrategy, strategyConfig);
       botService.start(category, symbol, interval, amount);
     } else {
       console.log('Stopping bot');
       botService.stop();
     }
     dispatch(setBotRunning(!botRunning));
-  }, [botRunning, category, symbol, interval, amount, dispatch]);
+  }, [botRunning, category, symbol, interval, amount, currentStrategy, strategyConfig, dispatch]);
 
   const handleRequestDemoFunds = useCallback(async () => {
     try {
@@ -142,6 +155,9 @@ const Account = () => {
             disabled={botRunning}
           />
         </div>
+
+        {/* Strategy Selector */}
+        <StrategySelector />
 
         {/* Action Buttons */}
         <div className="space-y-3">
