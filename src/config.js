@@ -1,6 +1,6 @@
 const config = {
-  apiKey: process.env.BYBIT_API_KEY || 'WD53nBPIwh4MAxRPr5',
-  secretKey: process.env.BYBIT_SECRET_KEY || 'DeOPwPPRM43iZccKAYdKlvnEb8Y7MmRDOTyr',
+  apiKey: process.env.NEXT_PUBLIC_BYBIT_API_KEY,
+  secretKey: process.env.NEXT_PUBLIC_BYBIT_SECRET_KEY,
   rsiPeriod: 14,
   rsiOverbought: 70,
   rsiOversold: 30,

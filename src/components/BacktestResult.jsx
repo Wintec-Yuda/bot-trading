@@ -21,7 +21,7 @@ const BacktestResults = () => {
   const [symbol, setSymbol] = useState("BTCUSDT");
   const [params, setParams] = useState({
     strategyName: "simple",
-    symbol: "BTCUSDT",
+    symbol: symbol,
     interval: "15",
     initialBalance: "10000",
     startDate: "",
