@@ -1,4 +1,3 @@
-// backtesting/core/Backtester.js
 class Backtester {
     constructor(strategy, config = {}) {
       this.strategy = strategy;

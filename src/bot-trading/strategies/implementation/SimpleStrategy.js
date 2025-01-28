@@ -1,4 +1,3 @@
-// strategies/implementations/SimpleStrategy.js
 import { IStrategy } from '../types';
 
 class SimpleStrategy extends IStrategy {

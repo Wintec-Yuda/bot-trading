@@ -1,4 +1,3 @@
-// services/trade.js
 import { axiosInstanceDemo } from "@/lib/axios/axios";
 import { generateSignature } from "../utils";
 

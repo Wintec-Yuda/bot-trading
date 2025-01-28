@@ -1,4 +1,3 @@
-// services/botService.js
 import marketService from "./market";
 import tradeService from "./trade";
 import accountService from "./account";

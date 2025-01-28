@@ -1,3 +1,5 @@
+'use client'
+
 import marketService from "@/bot-trading/services/market";
 import React, { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";

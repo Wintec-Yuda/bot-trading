@@ -1,4 +1,3 @@
-// backtesting/services/backtestService.js
 import Backtester from '../core/Backtester';
 import marketService from '../../services/market';
 import { strategyRegistry } from '../../strategies';

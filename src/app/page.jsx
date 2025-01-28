@@ -1,5 +1,3 @@
-"use client";
-
 import Account from "@/components/Account";
 import MarketData from "@/components/Chart";
 import Position from "@/components/Position";
