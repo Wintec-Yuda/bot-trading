@@ -3,6 +3,7 @@
 import Account from "@/components/Account";
 import MarketData from "@/components/Chart";
 import Position from "@/components/Position";
+import BacktestResults from "@/components/BacktestResult";
 import ProviderWrapper from "@/components/ProviderWrapper";
 import React from "react";
 
@@ -29,6 +30,10 @@ const Page = () => {
             </div>
             <div className="bg-gray-800 rounded-lg shadow p-4">
               <Position />
+            </div>
+            {/* New Backtesting Section */}
+            <div className="bg-gray-800 rounded-lg shadow p-4">
+              <BacktestResults />
             </div>
           </main>
         </div>
