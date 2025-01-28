@@ -44,7 +44,6 @@ class BacktestService {
       // Format and return results
       return this.formatResults(results, params);
     } catch (error) {
-      console.error('Backtest error:', error);
       throw error;
     }
   }
@@ -94,8 +93,6 @@ class BacktestService {
         params.end = new Date(endDate).getTime();
       }
 
-      console.log('Fetching historical data with params:', params);
-
       const data = await marketService.getAllKline(params);
 
       if (!data || data.length === 0) {
@@ -106,12 +103,9 @@ class BacktestService {
         throw new Error('Insufficient historical data for reliable backtesting. Need at least 50 candles.');
       }
 
-      console.log(`Fetched ${data.length} candles for backtesting`);
-
       return data;
     } catch (error) {
-      console.error('Error fetching historical data:', error);
-      throw new Error(`Failed to fetch historical data: ${error.message}`);
+      throw new error;
     }
   }
 

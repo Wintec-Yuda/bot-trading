@@ -6,6 +6,7 @@ import Position from "@/components/Position";
 import BacktestResults from "@/components/BacktestResult";
 import ProviderWrapper from "@/components/ProviderWrapper";
 import React from "react";
+import { ToastContainer } from "react-toastify";
 
 const Page = () => {
   return (
@@ -37,6 +38,7 @@ const Page = () => {
             </div>
           </main>
         </div>
+        <ToastContainer />
       </div>
     </ProviderWrapper>
   );

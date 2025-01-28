@@ -18,14 +18,6 @@ class SimpleStrategy extends IStrategy {
     const volatility = this._calculateVolatility(prices.slice(-lookbackPeriod));
     const momentum = this._calculateMomentum(prices.slice(-5));
 
-    // Detailed analysis logging
-    console.log('\n📊 Strategy Analysis:', {
-      currentPrice: currentPrice.toFixed(2),
-      volatility: volatility.toFixed(2) + '%',
-      momentum: momentum.toFixed(2) + '%',
-      minRequiredVolatility: minVolatility.toFixed(2) + '%'
-    });
-
     if (volatility < minVolatility) {
       return {
         action: 'HOLD',
@@ -72,15 +64,6 @@ class SimpleStrategy extends IStrategy {
     const pnl = side === 'BUY' 
       ? ((currentPrice - entryPrice) / entryPrice * 100)
       : ((entryPrice - currentPrice) / entryPrice * 100);
-
-    console.log('\n📈 Position Monitor:', {
-      side,
-      entryPrice: entryPrice.toFixed(2),
-      currentPrice: currentPrice.toFixed(2),
-      pnlPercentage: pnl.toFixed(2) + '%',
-      takeProfit: takeProfit?.toFixed(2) || 'None',
-      stopLoss: stopLoss?.toFixed(2) || 'None'
-    });
 
     if (side === 'BUY') {
       if (takeProfit && currentPrice >= takeProfit) {

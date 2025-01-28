@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import positionService from '@/bot-trading/services/positionService';
 import { setPositionData } from '@/lib/redux/slices/tradeSlice';
+import { toast } from "react-toastify";
 
 const Position = () => {
   const [loading, setLoading] = useState(false);
@@ -21,7 +22,7 @@ const Position = () => {
       
       dispatch(setPositionData(activePositions));
     } catch (error) {
-      console.error('Failed to fetch positions:', error);
+      toast.error('Failed to fetch positions');
     }
     setLoading(false);
   };

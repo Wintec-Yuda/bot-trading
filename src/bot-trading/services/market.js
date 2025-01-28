@@ -10,8 +10,7 @@ const marketService = {
       const symbolsData = response.data.result.list.map((item) => item.symbol);
       return symbolsData;
     } catch (error) {
-      console.error("Error fetching symbols:", error);
-      return null;
+      throw error;
     }
   },
 
@@ -27,8 +26,7 @@ const marketService = {
       const response = await axiosInstanceDemo.get('/v5/market/kline', { params });
       return response.data.result.list;
     } catch (error) {
-      console.error("Error fetching kline data:", error);
-      return null;
+      throw error;
     }
   }
 };

@@ -19,26 +19,9 @@ class RSIStrategy extends IStrategy {
     const currentPrice = prices[prices.length - 1];
     const rsi = calculateRSI(prices, rsiPeriod);
 
-    // Detailed RSI analysis logging
-    console.log('\n📊 RSI Analysis:', {
-      currentPrice: currentPrice.toFixed(2),
-      rsiValue: rsi.toFixed(2),
-      rsiPeriod,
-      overboughtLevel: rsiOverbought,
-      oversoldLevel: rsiOversold
-    });
-
     if (rsi <= rsiOversold) {
       const takeProfit = currentPrice * (1 + tpPercentage / 100);
       const stopLoss = currentPrice * (1 - slPercentage / 100);
-
-      console.log('💰 Buy Signal Levels:', {
-        entry: currentPrice.toFixed(2),
-        takeProfit: takeProfit.toFixed(2),
-        stopLoss: stopLoss.toFixed(2),
-        potentialGain: tpPercentage.toFixed(2) + '%',
-        maxLoss: slPercentage.toFixed(2) + '%'
-      });
 
       return {
         action: 'BUY',
@@ -52,14 +35,6 @@ class RSIStrategy extends IStrategy {
     if (rsi >= rsiOverbought) {
       const takeProfit = currentPrice * (1 - tpPercentage / 100);
       const stopLoss = currentPrice * (1 + slPercentage / 100);
-
-      console.log('💰 Sell Signal Levels:', {
-        entry: currentPrice.toFixed(2),
-        takeProfit: takeProfit.toFixed(2),
-        stopLoss: stopLoss.toFixed(2),
-        potentialGain: tpPercentage.toFixed(2) + '%',
-        maxLoss: slPercentage.toFixed(2) + '%'
-      });
 
       return {
         action: 'SELL',
@@ -86,17 +61,6 @@ class RSIStrategy extends IStrategy {
     const pnl = side === 'BUY' 
       ? ((currentPrice - entryPrice) / entryPrice * 100)
       : ((entryPrice - currentPrice) / entryPrice * 100);
-
-    console.log('\n📈 Position Monitor:', {
-      side,
-      entryPrice: entryPrice.toFixed(2),
-      currentPrice: currentPrice.toFixed(2),
-      pnlPercentage: pnl.toFixed(2) + '%',
-      takeProfit: takeProfit?.toFixed(2) || 'None',
-      stopLoss: stopLoss?.toFixed(2) || 'None',
-      distanceToTP: takeProfit ? Math.abs(((currentPrice - takeProfit) / currentPrice * 100)).toFixed(2) + '%' : 'N/A',
-      distanceToSL: stopLoss ? Math.abs(((currentPrice - stopLoss) / currentPrice * 100)).toFixed(2) + '%' : 'N/A'
-    });
 
     if (side === 'BUY') {
       if (takeProfit && currentPrice >= takeProfit) {

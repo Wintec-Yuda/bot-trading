@@ -22,7 +22,6 @@ const filterSlice = createSlice({
       state.amount = action.payload;
     },
     setIntervalFilter: (state, action) => {
-        console.log('Setting interval to:', action.payload); // Debug log
         state.interval = action.payload;
       },
     setSearch: (state, action) => {

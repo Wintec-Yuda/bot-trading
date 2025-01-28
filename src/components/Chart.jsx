@@ -3,9 +3,10 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ApexCharts from "react-apexcharts";
 import { setSymbolData, setKlineData } from "@/lib/redux/slices/marketSlice";
-import { setIntervalFilter, setSearch, setSymbol } from "@/lib/redux/slices/filterSlice";
+import { setIntervalFilter, setSymbol } from "@/lib/redux/slices/filterSlice";
 import { formatInterval } from "@/lib/utils/chart";
 import SymbolModal from "./SymbolModal";
+import { toast } from "react-toastify";
 
 const Chart = () => {
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,7 @@ const Chart = () => {
         const data = await marketService.getAllSymbol(category);
         dispatch(setSymbolData(data));
       } catch (error) {
-        console.error("Error fetching symbols:", error);
+        toast.error('Failed to fetch symbols');
       }
     };
 
@@ -56,7 +57,6 @@ const Chart = () => {
       });
       dispatch(setKlineData(data));
     } catch (error) {
-      console.error("Error fetching kline data:", error);
       setKlineData([]);
     }
     setLoading(false);

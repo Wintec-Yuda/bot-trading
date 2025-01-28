@@ -41,8 +41,6 @@ const tradeService = {
         params.tpslMode = "Full";
       }
 
-      console.log('Placing order with params:', params);
-
       const timestamp = Date.now().toString();
       const signature = generateSignature(JSON.stringify(params));
 
@@ -54,13 +52,11 @@ const tradeService = {
       });
 
       if (response.data?.retCode === 0) {
-        console.log('Order placed successfully:', response.data);
         return response.data;
       } else {
         throw new Error(response.data?.retMsg || 'Order placement failed');
       }
     } catch (error) {
-      console.error("Order placement error:", error?.response?.data || error);
       throw error;
     }
   },

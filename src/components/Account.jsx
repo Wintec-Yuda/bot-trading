@@ -7,6 +7,7 @@ import { setAmount, setCategory } from "@/lib/redux/slices/filterSlice";
 import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import StrategySelector from "./StrategySelector";
+import { toast } from "react-toastify";
 
 const categories = ["spot", "linear"];
 
@@ -26,18 +27,9 @@ const Account = () => {
 
   const handleBotRun = useCallback(() => {
     if (!botRunning) {
-      console.log('Starting bot with parameters:', {
-        category,
-        symbol,
-        interval,
-        amount,
-        strategy: currentStrategy,
-        config: strategyConfig
-      });
       botService.setStrategy(currentStrategy, strategyConfig);
       botService.start(category, symbol, interval, amount);
     } else {
-      console.log('Stopping bot');
       botService.stop();
     }
     dispatch(setBotRunning(!botRunning));
@@ -47,11 +39,10 @@ const Account = () => {
     try {
       const response = await accountService.requestDemoFunds();
       if (response) {
-        console.log('Demo funds requested successfully');
         getBalance();
       }
     } catch (error) {
-      console.error('Error requesting demo funds:', error);
+      toast.error('Failed to request demo funds.');
     }
   }, []);
 
@@ -62,7 +53,7 @@ const Account = () => {
       dispatch(setAvailableBalance(response.availableBalance));
       dispatch(setMarginBalance(response.marginBalance));
     } catch (error) {
-      console.error('Error getting balance:', error);
+      toast.error('Failed to get account balance.');
     }
   }, [category, dispatch]);
 

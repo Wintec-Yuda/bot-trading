@@ -46,8 +46,7 @@ const positionService = {
         .map(formatPosition);
         
     } catch (error) {
-      console.error('Error fetching positions:', error?.response?.data || error);
-      return [];
+      throw error;
     }
   }
 };

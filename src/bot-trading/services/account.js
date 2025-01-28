@@ -23,8 +23,7 @@ const accountService = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error requesting demo funds:', error);
-      return null;
+      throw error;
     }
   },
   getAccountBalance: async (category) => {
@@ -64,7 +63,6 @@ const accountService = {
         };
       }
     } catch (error) {
-      console.error('Error getting balance:', error?.response?.data || error);
       return {
         walletBalance: '0',
         availableBalance: '0',

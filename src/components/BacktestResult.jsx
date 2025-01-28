@@ -1,45 +1,60 @@
-import React, { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import backtestService from '@/bot-trading/backtesting/services/backtestService';
-import { strategyRegistry } from '@/bot-trading/strategies';
+import React, { useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import backtestService from "@/bot-trading/backtesting/services/backtestService";
+import { strategyRegistry } from "@/bot-trading/strategies";
+import SymbolModal from "./SymbolModal";
+import { useSelector } from "react-redux";
 const BacktestResults = () => {
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
+  const [symbol, setSymbol] = useState("BTCUSDT");
   const [params, setParams] = useState({
-    strategyName: 'simple',
-    symbol: 'BTCUSDT',
-    interval: '15',
-    initialBalance: '10000',
-    startDate: '',
-    endDate: '',
+    strategyName: "simple",
+    symbol: "BTCUSDT",
+    interval: "15",
+    initialBalance: "10000",
+    startDate: "",
+    endDate: "",
     strategyConfig: {
-      tpPercentage: '2.0',
-      tpPercentageMax: '', // Empty means single value mode
-      slPercentage: '1.0',
-      slPercentageMax: '', // Empty means single value mode
+      tpPercentage: "2.0",
+      tpPercentageMax: "", // Empty means single value mode
+      slPercentage: "1.0",
+      slPercentageMax: "", // Empty means single value mode
       isRangeTP: false,
-      isRangeSL: false
-    }
+      isRangeSL: false,
+    },
   });
+
+  const symbolData = useSelector((state) => state.market.symbolData);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setParams(prev => ({
+    setParams((prev) => ({
       ...prev,
-      [name]: value || '' // Ensure empty string if value is null/undefined
+      [name]: value || "", // Ensure empty string if value is null/undefined
     }));
   };
 
   const handleConfigChange = (e) => {
     const { name, value } = e.target;
     // Keep as string in state, parse when using
-    setParams(prev => ({
+    setParams((prev) => ({
       ...prev,
       strategyConfig: {
         ...prev.strategyConfig,
-        [name]: value || '' // Ensure empty string if value is null/undefined
-      }
+        [name]: value || "", // Ensure empty string if value is null/undefined
+      },
     }));
   };
 
@@ -58,16 +73,29 @@ const BacktestResults = () => {
         initialBalance: getNumericValue(params.initialBalance),
         strategyConfig: {
           tpPercentage: getNumericValue(params.strategyConfig.tpPercentage),
-          slPercentage: getNumericValue(params.strategyConfig.slPercentage)
-        }
+          slPercentage: getNumericValue(params.strategyConfig.slPercentage),
+        },
       };
-      
+
       const results = await backtestService.runBacktest(parsedParams);
       setResults(results);
     } catch (err) {
       setError(err.message);
     }
     setLoading(false);
+  };
+
+  const handleSymbolChange = (e) => {
+    setSymbol(e.target.value);
+    setIsModalOpen(false); // Close the modal when a symbol is selected
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -84,7 +112,7 @@ const BacktestResults = () => {
               onChange={handleInputChange}
               className="w-full bg-gray-700 border border-gray-600 rounded-md p-2"
             >
-              {strategyRegistry.getAvailableStrategies().map(strategy => (
+              {strategyRegistry.getAvailableStrategies().map((strategy) => (
                 <option key={strategy} value={strategy}>
                   {strategyRegistry.get(strategy).getName()}
                 </option>
@@ -93,18 +121,22 @@ const BacktestResults = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Symbol</label>
-            <input
-              type="text"
-              name="symbol"
-              value={params.symbol}
-              onChange={handleInputChange}
-              className="w-full bg-gray-700 border border-gray-600 rounded-md p-2"
-            />
+            <label className="block text-sm font-medium mb-1">
+              Symbol
+            </label>
+            <button
+              className="w-full py-1 ps-2 rounded text-gray-100 bg-gray-700 flex items-center gap-2"
+              onClick={openModal}
+            >
+              <div className="text-xl mb-1">&#9776;</div>
+              <div className="font-semibold">{symbol}</div>
+            </button>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Take Profit %</label>
+            <label className="block text-sm font-medium mb-1">
+              Take Profit %
+            </label>
             <input
               type="number"
               name="tpPercentage"
@@ -116,7 +148,9 @@ const BacktestResults = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Stop Loss %</label>
+            <label className="block text-sm font-medium mb-1">
+              Stop Loss %
+            </label>
             <input
               type="number"
               name="slPercentage"
@@ -128,7 +162,9 @@ const BacktestResults = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Initial Balance</label>
+            <label className="block text-sm font-medium mb-1">
+              Initial Balance
+            </label>
             <input
               type="number"
               name="initialBalance"
@@ -159,7 +195,7 @@ const BacktestResults = () => {
             <input
               type="datetime-local"
               name="startDate"
-              value={params.startDate || ''}
+              value={params.startDate || ""}
               onChange={handleInputChange}
               className="w-full bg-gray-700 border border-gray-600 rounded-md p-2"
             />
@@ -170,7 +206,7 @@ const BacktestResults = () => {
             <input
               type="datetime-local"
               name="endDate"
-              value={params.endDate || ''}
+              value={params.endDate || ""}
               onChange={handleInputChange}
               className="w-full bg-gray-700 border border-gray-600 rounded-md p-2"
             />
@@ -182,7 +218,7 @@ const BacktestResults = () => {
           disabled={loading}
           className="mt-4 w-full bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-md disabled:opacity-50"
         >
-          {loading ? 'Running...' : 'Run Backtest'}
+          {loading ? "Running..." : "Run Backtest"}
         </button>
 
         {error && (
@@ -201,49 +237,67 @@ const BacktestResults = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <MetricCard
                 title="Total Return"
-                value={results.performance?.netProfit 
-                  ? `${((results.performance.netProfit / params.initialBalance) * 100).toFixed(2)}%`
-                  : 'N/A'}
+                value={
+                  results.performance?.netProfit
+                    ? `${(
+                        (results.performance.netProfit /
+                          params.initialBalance) *
+                        100
+                      ).toFixed(2)}%`
+                    : "N/A"
+                }
               />
               <MetricCard
                 title="Win Rate"
-                value={results.performance?.winRate 
-                  ? `${results.performance.winRate.toFixed(2)}%`
-                  : 'N/A'}
+                value={
+                  results.performance?.winRate
+                    ? `${results.performance.winRate.toFixed(2)}%`
+                    : "N/A"
+                }
               />
               <MetricCard
                 title="Profit Factor"
-                value={results.performance?.profitFactor 
-                  ? results.performance.profitFactor.toFixed(2)
-                  : 'N/A'}
+                value={
+                  results.performance?.profitFactor
+                    ? results.performance.profitFactor.toFixed(2)
+                    : "N/A"
+                }
               />
               <MetricCard
                 title="Max Drawdown"
-                value={results.performance?.maxDrawdown 
-                  ? `${results.performance.maxDrawdown.toFixed(2)}%`
-                  : 'N/A'}
+                value={
+                  results.performance?.maxDrawdown
+                    ? `${results.performance.maxDrawdown.toFixed(2)}%`
+                    : "N/A"
+                }
               />
               <MetricCard
                 title="Total Trades"
-                value={results.performance?.totalTrades ?? 'N/A'}
+                value={results.performance?.totalTrades ?? "N/A"}
               />
               <MetricCard
                 title="Average Trade"
-                value={results.performance?.averageTrade 
-                  ? `${results.performance.averageTrade.toFixed(2)}`
-                  : 'N/A'}
+                value={
+                  results.performance?.averageTrade
+                    ? `${results.performance.averageTrade.toFixed(2)}`
+                    : "N/A"
+                }
               />
               <MetricCard
                 title="Sharpe Ratio"
-                value={results.performance?.sharpeRatio 
-                  ? results.performance.sharpeRatio.toFixed(2)
-                  : 'N/A'}
+                value={
+                  results.performance?.sharpeRatio
+                    ? results.performance.sharpeRatio.toFixed(2)
+                    : "N/A"
+                }
               />
               <MetricCard
                 title="Net Profit"
-                value={results.performance?.netProfit 
-                  ? `${results.performance.netProfit.toFixed(2)}`
-                  : 'N/A'}
+                value={
+                  results.performance?.netProfit
+                    ? `${results.performance.netProfit.toFixed(2)}`
+                    : "N/A"
+                }
               />
             </div>
           </div>
@@ -256,17 +310,21 @@ const BacktestResults = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={results.performance.equityCurve}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
+                    <XAxis
                       dataKey="timestamp"
-                      tickFormatter={(timestamp) => new Date(timestamp).toLocaleDateString()}
+                      tickFormatter={(timestamp) =>
+                        new Date(timestamp).toLocaleDateString()
+                      }
                     />
                     <YAxis />
                     <Tooltip
-                      labelFormatter={(timestamp) => new Date(timestamp).toLocaleString()}
-                      formatter={(value) => [`${value.toFixed(2)}`, 'Equity']}
+                      labelFormatter={(timestamp) =>
+                        new Date(timestamp).toLocaleString()
+                      }
+                      formatter={(value) => [`${value.toFixed(2)}`, "Equity"]}
                     />
                     <Legend />
-                    <Line 
+                    <Line
                       type="monotone"
                       dataKey="equity"
                       stroke="#4CAF50"
@@ -297,20 +355,34 @@ const BacktestResults = () => {
                 <tbody>
                   {results.trades?.map((trade, index) => (
                     <tr key={index} className="border-t border-gray-700">
-                      <td className="p-2">{new Date(trade.entryTime).toLocaleString()}</td>
-                      <td className="p-2">{new Date(trade.exitTime).toLocaleString()}</td>
                       <td className="p-2">
-                        <span className={`px-2 py-1 rounded ${
-                          trade.side === 'BUY' ? 'bg-green-900/50' : 'bg-red-900/50'
-                        }`}>
+                        {new Date(trade.entryTime).toLocaleString()}
+                      </td>
+                      <td className="p-2">
+                        {new Date(trade.exitTime).toLocaleString()}
+                      </td>
+                      <td className="p-2">
+                        <span
+                          className={`px-2 py-1 rounded ${
+                            trade.side === "BUY"
+                              ? "bg-green-900/50"
+                              : "bg-red-900/50"
+                          }`}
+                        >
                           {trade.side}
                         </span>
                       </td>
-                      <td className="text-right p-2">${trade.entryPrice.toFixed(2)}</td>
-                      <td className="text-right p-2">${trade.exitPrice.toFixed(2)}</td>
-                      <td className={`text-right p-2 ${
-                        trade.netPnl >= 0 ? 'text-green-400' : 'text-red-400'
-                      }`}>
+                      <td className="text-right p-2">
+                        ${trade.entryPrice.toFixed(2)}
+                      </td>
+                      <td className="text-right p-2">
+                        ${trade.exitPrice.toFixed(2)}
+                      </td>
+                      <td
+                        className={`text-right p-2 ${
+                          trade.netPnl >= 0 ? "text-green-400" : "text-red-400"
+                        }`}
+                      >
                         ${trade.netPnl.toFixed(2)}
                       </td>
                       <td className="p-2">{trade.reason}</td>
@@ -322,6 +394,14 @@ const BacktestResults = () => {
           )}
         </div>
       )}
+      {/* Modal for Symbol Selection */}
+      <SymbolModal
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+        symbolData={symbolData}
+        currentSymbol={symbol}
+        onChange={handleSymbolChange}
+      />
     </div>
   );
 };

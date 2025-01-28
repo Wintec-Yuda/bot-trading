@@ -18,7 +18,7 @@ const Positions = () => {
         setPositions(activePositions);
       }
     } catch (error) {
-      console.error('Failed to fetch positions:', error);
+      throw error;
     }
     setLoading(false);
   };
