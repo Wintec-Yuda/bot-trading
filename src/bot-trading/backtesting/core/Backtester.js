@@ -26,7 +26,7 @@ class Backtester {
       return price * slippageMultiplier;
     }
   
-    async runBacktest(data) {
+    async runBacktest(data, leverage) {
       this.reset();
       const results = {
         trades: [],
@@ -43,7 +43,7 @@ class Backtester {
   
         // If we have a position, check for exit signals
         if (position) {
-          const exitSignal = this.strategy.monitorPosition(currentPrice, position);
+          const exitSignal = this.strategy.monitorPosition(currentPrice, position, leverage);
           if (exitSignal) {
             const tradeResult = this.closePosition(position, currentPrice, timestamp, exitSignal.reason);
             results.trades.push(tradeResult);

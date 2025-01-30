@@ -3,12 +3,11 @@
 import marketService from "@/bot-trading/services/market";
 import React, { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setSymbolData, setKlineData } from "@/lib/redux/slices/marketSlice";
+import { setKlineData } from "@/lib/redux/slices/marketSlice";
 import { setIntervalFilter, setSymbol } from "@/lib/redux/slices/filterSlice";
 import { formatInterval } from "@/lib/utils/chart";
 import SymbolModal from "./SymbolModal";
-import CandlestickChart from "./CandlestickChart"; // Import komponen baru
-import { toast } from "react-toastify";
+import CandlestickChart from "./CandlestickChart";
 
 const Chart = () => {
   const [loading, setLoading] = useState(false);
@@ -17,7 +16,6 @@ const Chart = () => {
   const dispatch = useDispatch();
   const { category, symbol, interval } = useSelector((state) => state.filter);
   const klineData = useSelector((state) => state.market.klineData);
-  const symbolData = useSelector((state) => state.market.symbolData);
   const botRunning = useSelector((state) => state.account.botRunning);
 
   const intervals = [
@@ -35,19 +33,6 @@ const Chart = () => {
     "W",
     "M",
   ];
-
-  useEffect(() => {
-    const fetchSymbols = async () => {
-      try {
-        const data = await marketService.getAllSymbol(category);
-        dispatch(setSymbolData(data));
-      } catch {
-        toast.error('Failed to fetch symbols');
-      }
-    };
-
-    fetchSymbols();
-  }, [category, dispatch]);
 
   const fetchKlineData = async () => {
     setLoading(true);
@@ -226,8 +211,6 @@ const Chart = () => {
       <SymbolModal
         isModalOpen={isModalOpen}
         closeModal={closeModal}
-        symbolData={symbolData}
-        currentSymbol={symbol}
         onChange={handleSymbolChange}
       />
     </div>

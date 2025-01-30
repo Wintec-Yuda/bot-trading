@@ -1,7 +1,7 @@
 import React from "react";
 import SymbolDropdown from "./SymbolDropdown";
 
-const SymbolModal = ({ isModalOpen, closeModal, symbolData, currentSymbol, onChange }) => {
+const SymbolModal = ({ isModalOpen, closeModal, onChange, future }) => {
   if (!isModalOpen) return null;
 
   return (
@@ -17,9 +17,8 @@ const SymbolModal = ({ isModalOpen, closeModal, symbolData, currentSymbol, onCha
           </button>
         </div>
         <SymbolDropdown
-          symbolData={symbolData}
-          currentSymbol={currentSymbol}
           onChange={onChange}
+          future={future}
         />
       </div>
     </div>

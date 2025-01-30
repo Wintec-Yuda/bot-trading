@@ -15,7 +15,8 @@ class BacktestService {
       interval,
       startDate,
       endDate,
-      initialBalance
+      initialBalance,
+      leverage
     } = params;
 
     try {
@@ -38,7 +39,7 @@ class BacktestService {
       });
 
       // Run backtest
-      const results = await this.backtester.runBacktest(historicalData);
+      const results = await this.backtester.runBacktest(historicalData, leverage);
 
       // Format and return results
       return this.formatResults(results, params);

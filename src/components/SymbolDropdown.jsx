@@ -1,11 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearch } from "@/lib/redux/slices/filterSlice";
+import { setSymbolData } from "@/lib/redux/slices/marketSlice";
+import marketService from "@/bot-trading/services/market";
+import { toast } from "react-toastify";
 
-const SymbolDropdown = ({ symbolData, currentSymbol, onChange }) => {
+const SymbolDropdown = ({ onChange, future }) => {
   const search = useSelector((state) => state.filter.search);
+  const symbolData = useSelector((state) => state.market.symbolData);
   const dispatch = useDispatch();
 
+  const { category } = useSelector((state) => state.filter);
+
+  useEffect(() => {
+    const fetchSymbols = async () => {
+      try {
+        const data = await marketService.getAllSymbol(future || category);
+
+        dispatch(setSymbolData(data));
+      } catch {
+        toast.error('Failed to fetch symbols');
+      } finally {
+        dispatch(setSearch(''));
+      }
+    };
+    
+    fetchSymbols();
+  }, [category, dispatch]);
+  
   // Filter symbols based on the search query
   const filteredSymbols = symbolData.filter((symbol) =>
     symbol.toLowerCase().includes(search.toLowerCase())
