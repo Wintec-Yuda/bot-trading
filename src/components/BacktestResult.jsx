@@ -87,8 +87,8 @@ const BacktestResults = () => {
     }
   };
 
-  const handleSymbolChange = (e) => {
-    setSymbol(e.target.value);
+  const handleSymbolChange = (data) => {
+    setSymbol(data);
     setIsModalOpen(false);
   };
 

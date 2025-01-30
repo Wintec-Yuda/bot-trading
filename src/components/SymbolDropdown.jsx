@@ -6,9 +6,14 @@ const SymbolDropdown = ({ symbolData, currentSymbol, onChange }) => {
   const search = useSelector((state) => state.filter.search);
   const dispatch = useDispatch();
 
+  // Filter symbols based on the search query
   const filteredSymbols = symbolData.filter((symbol) =>
     symbol.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleButtonClick = (symbol) => {
+    onChange(symbol); // Update the selected symbol
+  };
 
   return (
     <div className="p-4">
@@ -19,17 +24,27 @@ const SymbolDropdown = ({ symbolData, currentSymbol, onChange }) => {
         value={search}
         onChange={(e) => dispatch(setSearch(e.target.value))}
       />
-      <select
-        className="w-full p-2 border rounded bg-white text-black dark:bg-gray-700 dark:text-white dark:border-gray-600"
-        value={currentSymbol}
-        onChange={onChange}
+
+      {/* Display all symbols initially, and filtered symbols when search is typed */}
+      <div
+        className="bg-white border rounded mt-2 shadow-lg dark:bg-gray-700 dark:border-gray-600"
+        style={{ maxHeight: "200px", overflowY: "auto" }} // Set max-height and enable scroll
       >
-        {filteredSymbols.map((symbol) => (
-          <option key={symbol} value={symbol}>
+        {(search ? filteredSymbols : symbolData).map((symbol) => (
+          <button
+            key={symbol}
+            onClick={() => handleButtonClick(symbol)}
+            className="w-full text-left p-2 hover:bg-gray-200 dark:hover:bg-gray-600"
+          >
             {symbol}
-          </option>
+          </button>
         ))}
-      </select>
+
+        {/* If no results found in the filtered list */}
+        {search && filteredSymbols.length === 0 && (
+          <p className="p-2 text-gray-500 dark:text-gray-300">No symbols found</p>
+        )}
+      </div>
     </div>
   );
 };

@@ -15,7 +15,7 @@ class BacktestService {
       interval,
       startDate,
       endDate,
-      initialBalance = 10000
+      initialBalance
     } = params;
 
     try {
@@ -137,13 +137,6 @@ class BacktestService {
         exitTime: new Date(t.exitTime).toISOString()
       }))
     };
-  }
-
-  getBacktestResults() {
-    if (!this.backtester) {
-      throw new Error('No backtest has been run yet');
-    }
-    return this.backtester.getResults();
   }
 }
 

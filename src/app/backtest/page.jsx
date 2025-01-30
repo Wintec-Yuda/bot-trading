@@ -27,7 +27,7 @@ const BacktestResults = () => {
     strategyName: "simple",
     symbol: symbol,
     interval: "15",
-    initialBalance: "10000",
+    initialBalance: "10",
     startDate: "",
     endDate: "",
     strategyConfig: {
@@ -67,6 +67,8 @@ const BacktestResults = () => {
   };
 
   const runBacktest = async () => {
+    console.log(params);
+    
     setLoading(true);
     setError(null);
     try {
@@ -88,8 +90,8 @@ const BacktestResults = () => {
     }
   };
 
-  const handleSymbolChange = (e) => {
-    setSymbol(e.target.value);
+  const handleSymbolChange = (data) => {
+    setSymbol(data);
     setIsModalOpen(false);
   };
 
@@ -188,8 +190,13 @@ const BacktestResults = () => {
               <option value="5">5m</option>
               <option value="15">15m</option>
               <option value="60">1h</option>
+              <option value="120">2h</option>
               <option value="240">4h</option>
+              <option value="360">6h</option>
+              <option value="720">12h</option>
               <option value="D">1d</option>
+              <option value="W">1w</option>
+              <option value="M">1m</option>
             </select>
           </div>
 

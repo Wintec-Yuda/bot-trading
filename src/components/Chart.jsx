@@ -169,8 +169,8 @@ const Chart = () => {
     [klineData]
   );
 
-  const handleSymbolChange = (e) => {
-    dispatch(setSymbol(e.target.value));
+  const handleSymbolChange = (data) => {
+    dispatch(setSymbol(data));
     setIsModalOpen(false);
   };
 
