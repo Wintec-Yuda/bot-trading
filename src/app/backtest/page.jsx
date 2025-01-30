@@ -26,7 +26,7 @@ const BacktestResults = () => {
   const [params, setParams] = useState({
     strategyName: "simple",
     symbol: symbol,
-    interval: "15",
+    interval: "360",
     initialBalance: "10",
     startDate: "",
     endDate: "",
@@ -38,7 +38,17 @@ const BacktestResults = () => {
       isRangeTP: false,
       isRangeSL: false,
     },
+    leverage: "10",
   });
+
+
+  const handleSliderChange = (e) => {
+    const { value } = e.target;
+    setParams((prev) => ({
+      ...prev,
+      leverage: value,
+    }));
+  };
 
   const symbolData = useSelector((state) => state.market.symbolData);
 
@@ -108,7 +118,20 @@ const BacktestResults = () => {
       {/* Configuration Panel */}
       <div className="bg-gray-800 p-6 rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Backtest Configuration</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+           <div>
+            <label className="block text-sm font-medium mb-1">
+              Symbol
+            </label>
+            <button
+              className="w-full py-1 ps-2 rounded text-gray-100 bg-gray-700 flex items-center gap-2"
+              onClick={openModal}
+            >
+              <div className="text-xl mb-1">&#9776;</div>
+              <div className="font-semibold">{symbol}</div>
+            </button>
+          </div>
+
           <div>
             <label className="block text-sm font-medium mb-1">Strategy</label>
             <select
@@ -125,17 +148,17 @@ const BacktestResults = () => {
             </select>
           </div>
 
-          <div>
+           <div>
             <label className="block text-sm font-medium mb-1">
-              Symbol
+              Initial Balance
             </label>
-            <button
-              className="w-full py-1 ps-2 rounded text-gray-100 bg-gray-700 flex items-center gap-2"
-              onClick={openModal}
-            >
-              <div className="text-xl mb-1">&#9776;</div>
-              <div className="font-semibold">{symbol}</div>
-            </button>
+            <input
+              type="number"
+              name="initialBalance"
+              value={params.initialBalance}
+              onChange={handleInputChange}
+              className="w-full bg-gray-700 border border-gray-600 rounded-md p-2"
+            />
           </div>
 
           <div>
@@ -167,16 +190,47 @@ const BacktestResults = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Initial Balance
-            </label>
-            <input
-              type="number"
-              name="initialBalance"
-              value={params.initialBalance}
-              onChange={handleInputChange}
-              className="w-full bg-gray-700 border border-gray-600 rounded-md p-2"
-            />
+            <label className="block text-sm font-medium mb-2">Leverage {params.leverage}x</label>
+            <div className="relative">
+              <div className="flex items-center gap-4">
+                <input
+                  type="range"
+                  min="1"
+                  max="50"
+                  step="1"
+                  value={params.leverage}
+                  onChange={handleSliderChange}
+                  className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                  style={{
+                    background: `linear-gradient(to right, #FACC15 ${
+                      ((params.leverage - 1) / 49) * 100
+                    }%, #374151 ${((params.leverage - 1) / 49) * 100}%)`,
+                  }}
+                />
+              </div>
+
+              <div className="relative w-full flex justify-between mt-2 mb-5">
+                {[1, 10, 20, 30, 40, 50].map((value) => (
+                  <div
+                    key={value}
+                    className="flex flex-col items-center"
+                    style={{
+                      position: "absolute",
+                      left: `${((value - 1) / 49) * 100}%`,
+                      transform: "translateX(-50%)",
+                    }}
+                  >
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{
+                        backgroundColor: params.leverage >= value ? "#FACC15" : "#6B7280",
+                      }}
+                    ></div>
+                    <span className="mt-1 text-sm text-gray-400">{value}x</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div>
@@ -187,7 +241,6 @@ const BacktestResults = () => {
               onChange={handleInputChange}
               className="w-full bg-gray-700 border border-gray-600 rounded-md p-2"
             >
-              <option value="5">5m</option>
               <option value="15">15m</option>
               <option value="60">1h</option>
               <option value="120">2h</option>
@@ -252,7 +305,7 @@ const BacktestResults = () => {
                     ? `${(
                         (results.performance.netProfit /
                           params.initialBalance) *
-                        100
+                        100 * params.leverage
                       ).toFixed(2)}%`
                     : "N/A"
                 }
@@ -305,7 +358,9 @@ const BacktestResults = () => {
                 title="Net Profit"
                 value={
                   results.performance?.netProfit
-                    ? `${results.performance.netProfit.toFixed(2)}`
+                    ? `${(results.performance.netProfit 
+                      * params.leverage)
+                      .toFixed(2)}$`
                     : "N/A"
                 }
               />
@@ -393,7 +448,7 @@ const BacktestResults = () => {
                           trade.netPnl >= 0 ? "text-green-400" : "text-red-400"
                         }`}
                       >
-                        ${trade.netPnl.toFixed(2)}
+                        `${Number((trade.netPnl * params.leverage).toFixed(2)).toLocaleString("en-US")}`
                       </td>
                       <td className="p-2">{trade.reason}</td>
                     </tr>

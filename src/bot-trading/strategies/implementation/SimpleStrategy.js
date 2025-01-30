@@ -66,17 +66,17 @@ class SimpleStrategy extends IStrategy {
 
     if (side === 'BUY') {
       if (takeProfit && currentPrice >= takeProfit) {
-        return { action: 'SELL', reason: `Take profit reached (${pnl.toFixed(2)}% gain)` };
+        return { action: 'SELL', reason: `Take profit reached (${(pnl * 10).toFixed(2)}% gain)` };
       }
       if (stopLoss && currentPrice <= stopLoss) {
-        return { action: 'SELL', reason: `Stop loss triggered (${pnl.toFixed(2)}% loss)` };
+        return { action: 'SELL', reason: `Stop loss triggered (${(pnl * 10).toFixed(2)}% loss)` };
       }
     } else if (side === 'SELL') {
       if (takeProfit && currentPrice <= takeProfit) {
-        return { action: 'BUY', reason: `Take profit reached (${pnl.toFixed(2)}% gain)` };
+        return { action: 'BUY', reason: `Take profit reached (${(pnl * 10).toFixed(2)}% gain)` };
       }
       if (stopLoss && currentPrice >= stopLoss) {
-        return { action: 'BUY', reason: `Stop loss triggered (${pnl.toFixed(2)}% loss)` };
+        return { action: 'BUY', reason: `Stop loss triggered (${(pnl * 10).toFixed(2)}% loss)` };
       }
     }
 
