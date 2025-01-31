@@ -27,11 +27,7 @@ const ResultBacktesting = () => {
               title="Total Return"
               value={
                 results.performance?.netProfit
-                  ? `${(
-                      (results.performance.netProfit / params.initialBalance) *
-                      100 *
-                      params.leverage
-                    ).toFixed(2)}%`
+                  ? `${((results.performance.netProfit / params.initialBalance) *100).toFixed(2)}%`
                   : "N/A"
               }
             />
@@ -83,9 +79,7 @@ const ResultBacktesting = () => {
               title="Net Profit"
               value={
                 results.performance?.netProfit
-                  ? `${(
-                      results.performance.netProfit * params.leverage
-                    ).toFixed(2)}$`
+                  ? `${results.performance.netProfit.toFixed(2)}$`
                   : "N/A"
               }
             />
@@ -111,7 +105,7 @@ const ResultBacktesting = () => {
                     labelFormatter={(timestamp) =>
                       new Date(timestamp).toLocaleString()
                     }
-                    formatter={(value) => [`${value.toFixed(2)}`, "Equity"]}
+                    formatter={(value) => [`${value}`, "Equity"]}
                   />
                   <Legend />
                   <Line
@@ -175,7 +169,7 @@ const ResultBacktesting = () => {
                     >
                       `$
                       {Number(
-                        (trade.netPnl * params.leverage).toFixed(2)
+                        trade.netPnl.toFixed(2)
                       ).toLocaleString("en-US")}
                       `
                     </td>

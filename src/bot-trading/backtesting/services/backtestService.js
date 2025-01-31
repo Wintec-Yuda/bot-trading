@@ -34,12 +34,13 @@ class BacktestService {
       
       // Initialize backtester
       this.backtester = new Backtester(strategy, {
-        initialBalance,
-        strategyConfig: processedConfig
+        initialBalance: (parseFloat(initialBalance) * leverage).toString(),
+        strategyConfig: processedConfig,
+        leverage: leverage
       });
 
       // Run backtest
-      const results = await this.backtester.runBacktest(historicalData, leverage);
+      const results = await this.backtester.runBacktest(historicalData);
 
       // Format and return results
       return this.formatResults(results, params);
@@ -116,6 +117,9 @@ class BacktestService {
       equity
     } = results;
 
+    console.log(equity);
+    
+
     return {
       summary: {
         strategy: params.strategyName,
@@ -123,7 +127,7 @@ class BacktestService {
         interval: params.interval,
         startDate: params.startDate,
         endDate: params.endDate,
-        initialBalance: params.initialBalance
+        initialBalance: params.initialBalance,
       },
       performance: {
         ...metrics,

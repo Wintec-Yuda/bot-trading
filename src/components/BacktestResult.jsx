@@ -323,7 +323,7 @@ const BacktestResults = () => {
                       labelFormatter={(timestamp) =>
                         new Date(timestamp).toLocaleString()
                       }
-                      formatter={(value) => [`${value.toFixed(2)}`, "Equity"]}
+                      formatter={(value) => [`${value}`, "Equity"]}
                     />
                     <Legend />
                     <Line

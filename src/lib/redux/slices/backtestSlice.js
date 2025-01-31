@@ -16,14 +16,14 @@ const initialState = {
   params: {
     strategyName: "simple",
     symbol: "BTCUSDT",
-    interval: "D",
+    interval: "720",
     initialBalance: "10",
     leverage: "10",
     startDate: threeMonthsAgoFormatter,
     endDate: todayFormatter,
     strategyConfig: {
-      tpPercentage: "10",
-      slPercentage: "3",
+      tpPercentage: "100",
+      slPercentage: "30",
       isRangeTP: false,
       isRangeSL: false,
     },
